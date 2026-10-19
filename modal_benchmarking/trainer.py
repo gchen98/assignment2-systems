@@ -77,7 +77,7 @@ def sanity_check(args):
 def profile(
         function_name: str,
         label: Optional[str] = None,
-        steps: int = 3,
+        profiled_steps: int = 1,
         wait: int = 0,
         skip_first:int = 0,
         warmup_steps:int=1,
@@ -99,9 +99,12 @@ def profile(
     output_dir.mkdir(parents = True, exist_ok= True)
 
     if schedule is None:
-        if steps < 3:
-            raise ValueError("Steps must be at least 3 when using default schedule")
-        schedule = {"skip_first":skip_first,"wait":wait, "warmup": warmup_steps, "active": steps, "repeat": 0 }
+        # if steps < 3:
+        #     raise ValueError("Steps must be at least 3 when using default schedule")
+        total_steps = skip_first+wait+warmup_steps+profiled_steps
+        # active_steps = total_steps - skip_first - wait - warmup_steps
+        # total_steps = skip_first + wait + warmup_steps + steps
+        schedule = {"skip_first":skip_first,"wait":wait, "warmup": warmup_steps, "active": profiled_steps, "repeat": 1 }
         print(f"Schedule {schedule}")
     schedule = torch.profiler.schedule(**schedule)
 
@@ -133,12 +136,13 @@ def profile(
                                          lr=1e-3 , eps=1e-8,weight_decay=0.01)
         kwargs['transformer_model'] = transformer_model
         kwargs['adam_optimizer'] = adam_optimizer
-        for _ in range(steps):
+        for a in range(total_steps):
+            print(f"at step {a}")
             function.local(**kwargs)
             prof.step()
     if print_rows:
         print(
-            prof.key_averages().table(sort_by="cuda_time_total",row_limit=print_rows)
+            prof.key_averages().table(sort_by="self_cuda_time_total",row_limit=print_rows)
         )
     trace_path = sorted(
         output_dir.glob("**/*.pt.trace.json"),

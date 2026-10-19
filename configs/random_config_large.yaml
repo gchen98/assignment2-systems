@@ -1,0 +1,7 @@
+model_params:
+    rope_theta: 10000
+    context_length: 512
+    embedding_dim: 1280
+    feed_forward_dim: 5120
+    num_layers: 36
+    num_heads: 20

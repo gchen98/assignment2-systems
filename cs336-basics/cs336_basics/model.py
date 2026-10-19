@@ -18,6 +18,11 @@ from cs336_basics.nn_utils import softmax
 logger = logging.getLogger(__name__)
 
 
+def get_total_params(module: torch.nn.Module) -> int:
+    total_params = sum(p.numel() for p in module.parameters())
+    return total_params
+
+
 class Linear(nn.Module):
     def __init__(self, d_in: int, d_out: int):
         """A linear layer initialized with truncated normal fan-in fan-out.
@@ -81,6 +86,9 @@ class RMSNorm(nn.Module):
         super().__init__()
         self.weight = nn.Parameter(torch.ones(hidden_size, device=device))
         self.eps = eps
+
+
+
 
     def forward(self, x):
         """
@@ -177,6 +185,7 @@ class BasicsTransformerLM(nn.Module):
         predicted unnormalized next-word distribution for each token.
     """
 
+
     def __init__(
         self,
         vocab_size: int,
@@ -199,6 +208,10 @@ class BasicsTransformerLM(nn.Module):
         self.positional_encoder = (
             RotaryEmbedding(context_length, d_head, rope_theta) if rope_theta is not None else None
         )
+        rope_params = get_total_params(self.positional_encoder)
+        logger.debug(f"Rope params {rope_params}")
+
+
 
         self.layers = nn.ModuleList(
             [

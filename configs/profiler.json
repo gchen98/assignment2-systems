@@ -1,5 +1,5 @@
 {
-  "steps":15,
+  "profiled_steps":5,
   "skip_first":5,
   "warmup_steps":5,
   "wait":0,
