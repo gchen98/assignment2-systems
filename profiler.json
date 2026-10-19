@@ -1,0 +1,10 @@
+{
+  "steps":15,
+  "skip_first":5,
+  "warmup_steps":5,
+  "wait":0,
+  "batch_size":4,
+  "vocab_size":10000,
+  "device":"cuda",
+  "training_mode":"training"
+}
