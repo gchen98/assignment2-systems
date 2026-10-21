@@ -1,4 +1,6 @@
 {
+  "precision_mode": "fixed",
+  "dtype_str": "bf16",
   "profiled_steps":5,
   "skip_first":5,
   "warmup_steps":5,
